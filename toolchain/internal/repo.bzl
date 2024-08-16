@@ -256,6 +256,7 @@ llvm_config_attrs.update({
     "extra_target_compatible_with": attr.string_list_dict(
         mandatory = False,
         doc = "Extra constraints to be added to target_compatible_with for each target",
+    ),
     "_cc_toolchain_config_bzl": attr.label(
         default = "//toolchain:cc_toolchain_config.bzl",
     ),
