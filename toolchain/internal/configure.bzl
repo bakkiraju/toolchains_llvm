@@ -45,6 +45,8 @@ BZLMOD_ENABLED = "@@" in str(Label("//:unused"))
 def llvm_config_impl(rctx):
     _check_os_arch_keys(rctx.attr.sysroot)
     _check_os_arch_keys(rctx.attr.cxx_builtin_include_directories)
+    _check_os_arch_keys(rctx.attr.extra_exec_compatible_with)
+    _check_os_arch_keys(rctx.attr.extra_target_compatible_with)
 
     os = _os(rctx)
     if os == "windows":
@@ -154,6 +156,8 @@ def llvm_register_toolchains():
         coverage_link_flags_dict = rctx.attr.coverage_link_flags,
         unfiltered_compile_flags_dict = rctx.attr.unfiltered_compile_flags,
         llvm_version = llvm_version,
+        extra_exec_compatible_with = rctx.attr.extra_exec_compatible_with,
+        extra_target_compatible_with = rctx.attr.extra_target_compatible_with,
     )
     host_dl_ext = "dylib" if os == "darwin" else "so"
     host_tools_info = dict([
@@ -334,11 +338,11 @@ toolchain(
     exec_compatible_with = [
         "@platforms//cpu:{host_arch}",
         "@platforms//os:{host_os_bzl}",
-    ],
+    ] + {extra_exec_compatible_with_specific} + {extra_exec_compatible_with_all_targets},
     target_compatible_with = [
         "@platforms//cpu:{target_arch}",
         "@platforms//os:{target_os_bzl}",
-    ],
+    ] + {extra_target_compatible_with_specific} + {extra_target_compatible_with_all_targets},,
     target_settings = {target_settings},
     toolchain = ":cc-clang-{suffix}",
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
@@ -468,6 +472,10 @@ cc_toolchain(
         llvm_version = toolchain_info.llvm_version,
         extra_files_str = extra_files_str,
         host_tools_info = host_tools_info,
+        extra_exec_compatible_with_specific = toolchain_info.extra_exec_compatible_with.get(target_pair, []),
+        extra_target_compatible_with_specific = toolchain_info.extra_target_compatible_with.get(target_pair, []),
+        extra_exec_compatible_with_all_targets = toolchain_info.extra_exec_compatible_with.get("", []),
+        extra_target_compatible_with_all_targets = toolchain_info.extra_target_compatible_with.get("", []),
     )
 
 def _convenience_targets_str(rctx, use_absolute_paths, llvm_dist_rel_path, llvm_dist_label_prefix, host_dl_ext):
