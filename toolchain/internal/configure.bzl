@@ -342,7 +342,7 @@ toolchain(
     target_compatible_with = [
         "@platforms//cpu:{target_arch}",
         "@platforms//os:{target_os_bzl}",
-    ] + {extra_target_compatible_with_specific} + {extra_target_compatible_with_all_targets},,
+    ] + {extra_target_compatible_with_specific} + {extra_target_compatible_with_all_targets},
     target_settings = {target_settings},
     toolchain = ":cc-clang-{suffix}",
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
